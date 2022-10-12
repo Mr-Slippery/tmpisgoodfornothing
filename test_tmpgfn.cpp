@@ -1,7 +1,7 @@
-#include "tmpgfn.h"
+#include "tmpgfn/tmpgfn.h"
 
 static void check_lists() {
-  // lists
+  using namespace tmpgfn::lists;
 
   static_assert(
       // the first of the list of types: [float, char] is: float.
@@ -46,7 +46,8 @@ static void check_lists() {
 }
 
 static void check_maps() {
-  // maps
+  using namespace tmpgfn::lists;
+  using namespace tmpgfn::maps;
 
   using a_type_map =
       map<types<types<int, char>, types<double, float>, types<char, double>>>;
@@ -73,7 +74,6 @@ static void check_maps() {
 }
 
 int main() {
-
   check_lists();
   check_maps();
 
