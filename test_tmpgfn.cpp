@@ -1,5 +1,7 @@
 #include "tmpgfn/tmpgfn.h"
 
+#include <cstdint>
+
 static void check_lists() {
   using namespace tmpgfn::lists;
 
@@ -73,9 +75,27 @@ static void check_maps() {
                    map<nil::insert_front_t<types<int, char>>>>::value);
 }
 
+void check_constants() {
+  using namespace tmpgfn::constants;
+
+  using i_3 = constant<int, 3>;
+  static_assert(i_3::value == 3);
+  using i_4 = i_3::inc;
+  static_assert(i_4::value == 4);
+  using i_2 = i_4::dec::dec;
+  static_assert(i_2::value == 2);
+  static_assert(std::is_same<i_2::type, int>::value);
+
+  using u8_255 = constant<std::uint8_t, 255>;
+  using u8_0 = u8_255::inc;
+  static_assert(u8_0::value == 0u);
+  static_assert(std::is_same<u8_0::type, std::uint8_t>::value);
+}
+
 int main() {
   check_lists();
   check_maps();
+  check_constants();
 
   return 0;
 }
