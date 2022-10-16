@@ -26,14 +26,14 @@ template <typename First, typename Second, typename... Rest>
 struct map<types<types<First, Second>, Rest...>> {
   template <typename K> struct get_wrap {
     using type = std::conditional_t<
-        std::is_same<K, First>::value, types<Second>,
+        std::is_same_v<K, First>, types<Second>,
         typename map<types<Rest...>>::template get_wrap<K>::type>;
   };
   template <typename K> class get {
     using get_wrap_type = typename get_wrap<K>::type;
 
   public:
-    using type = std::enable_if_t<!std::is_same<get_wrap_type, nil>::value,
+    using type = std::enable_if_t<!std::is_same_v<get_wrap_type, nil>,
                                   typename get_wrap_type::first_t>;
   };
   template <typename K> using get_t = typename get<K>::type;
