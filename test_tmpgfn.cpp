@@ -42,6 +42,9 @@ static void check_lists() {
                                types<double, float>>);
   static_assert(
       std::is_same_v<types<int, char>::append_t<nil>, types<int, char>>);
+  static_assert(std::is_same_v<reverse_t<nil>, nil>);
+  static_assert(std::is_same_v<reverse_t<types<int, char, double>>,
+                               types<double, char, int>>);
 }
 
 static void check_maps() {

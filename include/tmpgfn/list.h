@@ -84,6 +84,25 @@ template <> struct types<> {
   template <typename... OTs> using append_t = typename append<OTs...>::type;
 };
 
+template <typename Result, typename List> struct reverse_aux {};
+
+template <typename Result, typename Head, typename... Rest>
+struct reverse_aux<Result, types<Head, Rest...>> {
+  using ResultWithHeadInserted = typename Result::template insert_front_t<Head>;
+  using type =
+      typename reverse_aux<ResultWithHeadInserted, types<Rest...>>::type;
+};
+
+template <typename Result> struct reverse_aux<Result, nil> {
+  using type = Result;
+};
+
+template <typename List> struct reverse {
+  using type = typename reverse_aux<nil, List>::type;
+};
+
+template <typename List> using reverse_t = typename reverse<List>::type;
+
 } // namespace lists
 } // namespace tmpgfn
 
