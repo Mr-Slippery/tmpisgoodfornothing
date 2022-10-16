@@ -4,7 +4,7 @@
 #include <type_traits>
 
 namespace tmpgfn {
-namespace constants {
+namespace expressions {
 
 template <typename V, V v> struct expression {
   using type = V;
@@ -73,7 +73,7 @@ struct divide
                         static_cast<typename E1::type>(E1::value / E2::value)> {
 };
 
-} // namespace constants
+} // namespace expressions
 } // namespace tmpgfn
 
 #endif // __TMPGFN_CONSTANT_H__

@@ -71,7 +71,7 @@ static void check_maps() {
 }
 
 void check_constants() {
-  using namespace tmpgfn::constants;
+  using namespace tmpgfn::expressions;
 
   using i_1 = one<int>;
   static_assert(std::is_same_v<i_1::type, int>);
