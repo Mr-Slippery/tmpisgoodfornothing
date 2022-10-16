@@ -27,8 +27,12 @@ template <typename E1, typename E2,
           typename std::enable_if_t<
               std::is_same_v<typename E1::type, typename E2::type>, bool> =
               true>
+struct validate_expressions {};
+
+template <typename E1, typename E2>
 struct add
-    : public expression<typename E1::type,
+    : validate_expressions<E1, E2>,
+      public expression<typename E1::type,
                         static_cast<typename E1::type>(E1::value + E2::value)> {
 };
 
@@ -36,14 +40,10 @@ template <typename E1,
           typename std::enable_if_t<E1::is_expression, bool> = true>
 struct increment : add<E1, one<typename E1::type>> {};
 
-template <typename E1, typename E2,
-          typename std::enable_if_t<E1::is_expression, bool> = true,
-          typename std::enable_if_t<E2::is_expression, bool> = true,
-          typename std::enable_if_t<
-              std::is_same_v<typename E1::type, typename E2::type>, bool> =
-              true>
+template <typename E1, typename E2>
 struct subtract
-    : public expression<typename E1::type,
+    : validate_expressions<E1, E2>,
+      public expression<typename E1::type,
                         static_cast<typename E1::type>(E1::value - E2::value)> {
 };
 
@@ -51,25 +51,17 @@ template <typename E1,
           typename std::enable_if_t<E1::is_expression, bool> = true>
 struct decrement : subtract<E1, one<typename E1::type>> {};
 
-template <typename E1, typename E2,
-          typename std::enable_if_t<E1::is_expression, bool> = true,
-          typename std::enable_if_t<E2::is_expression, bool> = true,
-          typename std::enable_if_t<
-              std::is_same_v<typename E1::type, typename E2::type>, bool> =
-              true>
+template <typename E1, typename E2>
 struct multiply
-    : public expression<typename E1::type,
+    : validate_expressions<E1, E2>,
+      public expression<typename E1::type,
                         static_cast<typename E1::type>(E1::value *E2::value)> {
 };
 
-template <typename E1, typename E2,
-          typename std::enable_if_t<E1::is_expression, bool> = true,
-          typename std::enable_if_t<E2::is_expression, bool> = true,
-          typename std::enable_if_t<
-              std::is_same_v<typename E1::type, typename E2::type>, bool> =
-              true>
+template <typename E1, typename E2>
 struct divide
-    : public expression<typename E1::type,
+    : validate_expressions<E1, E2>,
+      public expression<typename E1::type,
                         static_cast<typename E1::type>(E1::value / E2::value)> {
 };
 
