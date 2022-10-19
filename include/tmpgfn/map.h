@@ -34,7 +34,7 @@ struct map<types<types<First, Second>, Rest...>> {
 
   public:
     using type = std::enable_if_t<!std::is_same_v<get_wrap_type, nil>,
-                                  typename get_wrap_type::first_t>;
+                                  first_t<get_wrap_type>>;
   };
   template <typename K> using get_t = typename get<K>::type;
 

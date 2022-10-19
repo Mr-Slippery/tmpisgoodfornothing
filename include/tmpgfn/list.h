@@ -13,82 +13,72 @@ template <typename... Ts> struct types {};
 
 using nil = types<>;
 
-template <typename First, typename... Ts> struct types<First, Ts...> {
-  using this_t = types<First, Ts...>;
+template <typename List> struct first {};
 
-  struct first {
-    using type = First;
-  };
-  using first_t = typename first::type;
+template <typename First, typename... _> struct first<types<First, _...>> {
+  using type = First;
+};
+template <typename List> using first_t = typename first<List>::type;
 
-  struct rest {
-    using type = types<Ts...>;
-  };
-  using rest_t = typename rest::type;
+template <typename List> struct rest {};
 
-  template <typename NewFirst> struct insert_front {
-    using type = types<NewFirst, First, Ts...>;
-  };
-  template <typename NewFirst>
-  using insert_front_t = typename insert_front<NewFirst>::type;
-
-  template <typename Last> struct insert_back {
-    using type = types<First, Ts..., Last>;
-  };
-  template <typename Last>
-  using insert_back_t = typename insert_back<Last>::type;
-
-  struct length_aux {
-    static constexpr size_t value = 1 + rest_t::length_aux::value;
-  };
-  static constexpr size_t length = length_aux::value;
-
-  template <typename... OTs> struct append { using type = this_t; };
-
-  template <typename OHead, typename... ORest>
-  struct append<types<OHead, ORest...>> {
-    using type =
-        typename insert_back_t<OHead>::template append_t<types<ORest...>>;
-  };
-
-  template <typename... OTs> using append_t = typename append<OTs...>::type;
+template <typename _, typename... Ts> struct rest<types<_, Ts...>> {
+  using type = types<Ts...>;
 };
 
-template <> struct types<> {
-  struct rest {
-    using type = nil;
-  };
-  using rest_t = typename rest::type;
+template <> struct rest<nil> { using type = nil; };
+template <typename List> using rest_t = typename rest<List>::type;
 
-  template <typename First> struct insert_front { using type = types<First>; };
-  template <typename First>
-  using insert_front_t = typename insert_front<First>::type;
+template <typename List, typename NewFirst> struct insert_front {};
 
-  template <typename Last> struct insert_back { using type = types<Last>; };
-  template <typename Last>
-  using insert_back_t = typename insert_back<Last>::type;
-
-  struct length_aux {
-    static constexpr size_t value = 0;
-  };
-  static constexpr size_t length = length_aux::value;
-
-  template <typename... OTs> struct append { using type = nil; };
-
-  template <typename OHead, typename... ORest>
-  struct append<types<OHead, ORest...>> {
-    using type =
-        typename insert_back_t<OHead>::template append_t<types<ORest...>>;
-  };
-
-  template <typename... OTs> using append_t = typename append<OTs...>::type;
+template <typename NewFirst, typename... Ts>
+struct insert_front<types<Ts...>, NewFirst> {
+  using type = types<NewFirst, Ts...>;
 };
+
+template <typename List, typename NewFirst>
+using insert_front_t = typename insert_front<List, NewFirst>::type;
+
+template <typename NewLast, typename... Ts> struct insert_back {};
+
+template <typename... Ts, typename NewLast>
+struct insert_back<types<Ts...>, NewLast> {
+  using type = types<Ts..., NewLast>;
+};
+template <typename List, typename Last>
+using insert_back_t = typename insert_back<List, Last>::type;
+
+template <typename List> struct length_aux {};
+
+template <typename First, typename... Rest>
+struct length_aux<types<First, Rest...>> {
+  static constexpr size_t value = 1 + length_aux<types<Rest...>>::value;
+};
+
+template <> struct length_aux<nil> { static constexpr size_t value = 0; };
+
+template <typename List> struct length {
+  static constexpr size_t value = length_aux<List>::value;
+};
+
+template <typename List1, typename List2> struct append {};
+
+template <typename List1, typename Head2, typename... Rest2>
+struct append<List1, types<Head2, Rest2...>> {
+  using type =
+      typename append<insert_back_t<List1, Head2>, types<Rest2...>>::type;
+};
+
+template <typename List> struct append<List, nil> { using type = List; };
+
+template <typename List1, typename List2>
+using append_t = typename append<List1, List2>::type;
 
 template <typename Result, typename List> struct reverse_aux {};
 
 template <typename Result, typename Head, typename... Rest>
 struct reverse_aux<Result, types<Head, Rest...>> {
-  using ResultWithHeadInserted = typename Result::template insert_front_t<Head>;
+  using ResultWithHeadInserted = insert_front_t<Result, Head>;
   using type =
       typename reverse_aux<ResultWithHeadInserted, types<Rest...>>::type;
 };

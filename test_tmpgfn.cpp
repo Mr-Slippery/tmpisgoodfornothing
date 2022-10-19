@@ -6,42 +6,44 @@ static void check_lists() {
   using namespace tmpgfn::lists;
 
   // the first of the list of types: [float, char] is: float.
-  static_assert(std::is_same_v<types<float, char>::first_t, float>);
+  static_assert(std::is_same_v<first_t<types<float, char>>, float>);
   // the rest of the list of types: [int, float, char] is: [float, char].
   static_assert(
-      std::is_same_v<types<int, float, char>::rest_t, types<float, char>>);
+      std::is_same_v<rest_t<types<int, float, char>>, types<float, char>>);
   // the first of the rest of the list of types [int, float, char] is:
   // float.
   static_assert(
-      std::is_same_v<types<int, float, char>::rest_t::first_t, float>);
+      std::is_same_v<first_t<rest_t<types<int, float, char>>>, float>);
   using a_type_list = types<int, double, float>;
   // by inserting the first element of a list, in front of the
   // rest of the elements of the list, we get the list itself.
   static_assert(
-      std::is_same_v<a_type_list::rest_t::insert_front_t<a_type_list::first_t>,
+      std::is_same_v<insert_front_t<rest_t<a_type_list>, first_t<a_type_list>>,
                      a_type_list>);
-  static_assert(types<int, double, float>::length == 3);
+  static_assert(length<types<int, double, float>>::value == 3);
   // the length of the empty list is zero.
-  static_assert(nil::length == 0);
+  static_assert(length<nil>::value == 0);
 
-  using extended_type_list = a_type_list::insert_front_t<char>;
-  static_assert(std::is_same_v<extended_type_list::first_t, char>);
-  static_assert(extended_type_list::length == 4);
+  using extended_type_list = insert_front_t<a_type_list, char>;
+  static_assert(std::is_same_v<first_t<extended_type_list>, char>);
+  static_assert(length<extended_type_list>::value == 4);
 
-  using empty_list = nil::rest_t;
-  static_assert(empty_list::length == 0);
+  using empty_list = rest_t<nil>;
+  static_assert(length<empty_list>::value == 0);
   // inserting an element in front of the empty list and
   // inserting the same element at the back of the empty list
   // results in the same list.
-  static_assert(std::is_same_v<empty_list::insert_front_t<int>,
-                               empty_list::insert_back_t<int>>);
+  static_assert(std::is_same_v<insert_front_t<empty_list, int>,
+                               insert_back_t<empty_list, int>>);
+  static_assert(std::is_same_v<insert_back_t<insert_back_t<nil, int>, double>,
+                               types<int, double>>);
 
-  static_assert(std::is_same_v<types<int, char>::append_t<types<double, float>>,
+  static_assert(std::is_same_v<append_t<types<int, char>, types<double, float>>,
                                types<int, char, double, float>>);
-  static_assert(std::is_same_v<nil::append_t<types<double, float>>,
+  static_assert(std::is_same_v<append_t<nil, types<double, float>>,
                                types<double, float>>);
   static_assert(
-      std::is_same_v<types<int, char>::append_t<nil>, types<int, char>>);
+      std::is_same_v<append_t<types<int, char>, nil>, types<int, char>>);
   static_assert(std::is_same_v<reverse_t<nil>, nil>);
   static_assert(std::is_same_v<reverse_t<types<int, char, double>>,
                                types<double, char, int>>);
@@ -70,7 +72,7 @@ static void check_maps() {
   using empty_map = map<nil>;
   // a map is a list of type pairs.
   static_assert(std::is_same_v<empty_map::set_t<int, char>,
-                               map<nil::insert_front_t<types<int, char>>>>);
+                               map<insert_front_t<nil, types<int, char>>>>);
 }
 
 void check_constants() {
