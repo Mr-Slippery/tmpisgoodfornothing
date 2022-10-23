@@ -56,22 +56,22 @@ static void check_maps() {
   using a_type_map =
       map<types<types<int, char>, types<double, float>, types<char, double>>>;
   // the value corresponding to key int is: char.
-  static_assert(std::is_same_v<a_type_map::get_t<int>, char>);
-  static_assert(std::is_same_v<a_type_map::get_t<double>, float>);
-  static_assert(std::is_same_v<a_type_map::get_t<char>, double>);
+  static_assert(std::is_same_v<get_t<a_type_map, int>, char>);
+  static_assert(std::is_same_v<get_t<a_type_map, double>, float>);
+  static_assert(std::is_same_v<get_t<a_type_map, char>, double>);
 
   // extend a map with a key-value pair, overriding
   // the previous value for key int (char) with double.
-  using extended_type_map = a_type_map::set_t<int, double>;
+  using extended_type_map = set_t<a_type_map, int, double>;
   static_assert(
       std::is_same_v<extended_type_map,
                      map<types<types<int, double>, types<int, char>,
                                types<double, float>, types<char, double>>>>);
-  static_assert(std::is_same_v<extended_type_map::get_t<int>, double>);
+  static_assert(std::is_same_v<get_t<extended_type_map, int>, double>);
 
   using empty_map = map<nil>;
   // a map is a list of type pairs.
-  static_assert(std::is_same_v<empty_map::set_t<int, char>,
+  static_assert(std::is_same_v<set_t<empty_map, int, char>,
                                map<insert_front_t<nil, types<int, char>>>>);
 }
 
